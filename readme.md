@@ -21,13 +21,24 @@ Support can easily be added for all Libre Computer boards.
 - This does not support Raspberry Pi:registered: device tree overlays.
 - This does not support Raspberry Pi:registered: specific hardware acceleration.
 - There is no warranty implied or otherwise.
+- As a POC, the code is very ad-hoc and not representative of our normal coding standards.
 
 ## How to Use
+On your Raspberry Pi, run:
 ```bash
 git clone https://github.com/libre-computer-project/libretech-raspbian-portability.git
 cd libretech-raspbian-portability
 sudo ./oneshot.sh
 ```
+Follow the instructions. Move MicroSD card to one of the Libre Computer board.
 
 ## Help
 [Libera Chat IRC #librecomputer](https://web.libera.chat/#librecomputer)
+
+## Roadmap
+Our core work is on upstream Linux and u-boot so scripts such as this are not a high priority.
+- Raspbian 11 bullseye 64-bit and 32-bit support
+- ALL-H3-CC H2+/H3/H5 support
+- Refactor to robust coding standards
+
+If you need commercial support for 32-bit Raspbian or any distro, [please let us know](https://libre.computer/#contact).
