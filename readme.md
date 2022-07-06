@@ -28,3 +28,6 @@ git clone https://github.com/libre-computer-project/libretech-raspbian-portabili
 cd libretech-raspbian-portability
 sudo ./oneshot.sh
 ```
+
+## Help
+[Libera Chat IRC #librecomputer](https://web.libera.chat/#librecomputer)
