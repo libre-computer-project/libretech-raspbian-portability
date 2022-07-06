@@ -1,7 +1,8 @@
 # Libre Computer Raspbian Portability
 ## Objective
 This repository contains scripts that allows Libre Computer boards to run existing Raspbian images.
-It uses an upstream bootloader and kernel configured to support armhf executables.
+It uses an upstream bootloader and kernel configured to support armhf executables. The resulting
+image should boot both on the original board and the Libre Computer board.
 
 ## Current Status
 This is at the proof of concept stage and is tested against Raspbian Lite and Desktop based on
