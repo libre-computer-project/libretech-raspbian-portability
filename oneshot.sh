@@ -1,10 +1,34 @@
 #!/bin/bash
 
-set -ex
+# Copyright 2022 Da Xue. All rights reserved.
+
+set -e
 
 if [ "$USER" != "root" ]; then
 	echo "Please run this as root." >&2
 	echo "sudo $0 $@" >&2
+	exit 1
+fi
+
+cat <<EOF
+THIS IS A PROOF OF CONCEPT AND SHOULD ONLY BE USED FOR TESTING!
+
+There is no warranty implied and you are continuing at your own risk!
+Please backup the contents of this device/MicroSD if there is important data!
+
+This script installs/configures/overwrites data this device/MicroSD card to
+support Libre Computer AML-S905X-CC and AML-S805X-AC. It is designed to run on 
+a Raspberry Pi(R) and requires internet access to download components.
+
+Only Raspbian 10 Buster 32-bit armhf lite and desktop are currently supported.
+Once completed, move the MicroSD card to one of the Libre Computer boards.
+
+Please type 'continue' without quotes to acknowledge and start the script.
+
+EOF
+read -p ":" input
+if [ "${input,,}" != "continue" ]; then
+	echo "Input ${input} does not match 'continue'. Exiting."
 	exit 1
 fi
 
@@ -36,7 +60,7 @@ sfdisk_dev_p1_start=$(awk -F= "/^start/ {print \$2}" "$sfdisk_dev_p1_file")
 if [ -z "$sfdisk_dev_p1_start" ]; then
 	echo "disk: p1 start not found" >&2
 	exit 1
-elif [ "$sfdisk_dev_p1_start" -lt "" ]; then
+elif [ "$sfdisk_dev_p1_start" -lt 2048 ]; then
 	echo "disk: p1 starts too early" >&2
 	exit 1
 fi
@@ -115,3 +139,14 @@ boot_loader_file=$(mktemp)
 wget -O "$boot_loader_file" "$BOOT_LOADER_URL"
 dd if="$boot_loader_file" of=/dev/"$TARGET_DISK" bs=512 seek=1
 
+tee /etc/X11/xorg.conf <<EOF
+Section "Device"
+	Identifier "FBTurbo"
+	Driver "fbturbo"
+	Option "DRI2" "true"
+	Option "AccelMethod" "CPU"
+EndSection
+EOF
+
+read -n 1 -p "Modifications complete. Press any key to shutdown. Once the green LED stops blinking, move the MicroSD card to the Libre Computer board."
+shutdown -H now
