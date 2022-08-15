@@ -1,6 +1,6 @@
 #!/bin/bash
-
-# Copyright 2022 Da Xue. All rights reserved.
+# SPDX-License-Identifier: CC BY-NC-ND 4.0
+# Copyright (C) 2021 Da Xue <da@libre.computer>
 
 set -e
 
@@ -10,19 +10,83 @@ if [ "$USER" != "root" ]; then
 	exit 1
 fi
 
+if [ -z "$1" ]; then
+	echo "No board selected. Supported boards:" >&2
+	echo "all-h3-cc-h3" >&2
+	echo "all-h3-cc-h5" >&2
+	echo "aml-s805x-ac" >&2
+	echo "aml-s905x-cc" >&2
+#	echo "roc-rk3328-cc" >&2
+#	echo "roc-rk3399-pc" >&2
+	echo "sudo $0 BOARD" >&2
+	exit 1
+fi
+
+case "$1" in
+	all-h3-cc-h3)
+		BOARD_name=all-h3-cc-h3
+		BOARD_bootSector=16
+		BOARD_console=S0,115200
+		BOARD_bootLoader=1
+		BOARD_arch=arm
+		;;
+	all-h3-cc-h5)
+		BOARD_name=all-h3-cc-h5
+		BOARD_bootSector=16
+		BOARD_console=S0,115200
+		BOARD_bootLoader=1
+		BOARD_arch=arm64
+		;;
+	aml-s805x-ac)
+		BOARD_name=aml-s805x-ac
+		BOARD_bootSector=1
+		BOARD_console=AML0
+		BOARD_bootLoader=0
+		BOARD_arch=arm64
+		;;
+	aml-s905x-cc)
+		BOARD_name=aml-s905x-cc
+		BOARD_bootSector=1
+		BOARD_console=AML0
+		BOARD_bootLoader=1
+		BOARD_arch=arm64
+		;;
+#	roc-rk3328-cc)
+#		BOARD_name=roc-rk3328-cc
+#		BOARD_bootSector=64
+#		BOARD_console=S2,1500000
+#		BOARD_bootLoader=1
+#		BOARD_arch=arm64
+#		;;
+#	roc-rk3399-pc)
+#		BOARD_name=roc-rk3399-pc
+#		BOARD_bootSector=64
+#		BOARD_console=S2,1500000
+#		BOARD_bootLoader=1
+#		BOARD_arch=arm64
+#		;;
+	*)
+		echo "Unsupported board $1" >&2
+		exit 1
+		;;
+esac
+
 cat <<EOF
-THIS IS A PROOF OF CONCEPT AND SHOULD ONLY BE USED FOR TESTING!
+This script is designed to run on existing Raspbian images and enabled them
+them to boot on Libre Computer boards. It uses our extensive upstream u-boot
+and Linux work and infrastructure to support Raspbian's legacy ARMv6 binaries.
 
-There is no warranty implied and you are continuing at your own risk!
-Please backup the contents of this device/MicroSD if there is important data!
+It is a proof-of-concept and there are no warranties implied or otherwise.
+We highly recommend backing up the images if they hold important data in case
+something unexpected occurs. While they should still boot on your original
+device, this is not fully tested or guaranteed so continue at your own risk.
 
-This script installs/configures/overwrites data this device/MicroSD card to
-support Libre Computer AML-S905X-CC and AML-S805X-AC. It is designed to run on 
-a Raspberry Pi(R) and requires internet access to download components.
+This script installs/configures/overwrites data this device/MicroSD card.
+It is designed to run on Raspberry Pi(R)s and requires internet access to 
+download additional necessary components.
 
-Only Raspbian 10 Buster 32-bit armhf lite and desktop and Ubuntu 22.04 Jammy
-preinstalled desktop image are currently supported.
-Once completed, move the MicroSD card to one of the Libre Computer boards.
+Only Raspbian 10 Buster 32-bit armhf lite and desktop are supported.
+Once completed, move the MicroSD card to the selected Libre Computer Board.
 
 Please type 'continue' without quotes to acknowledge and start the script.
 
@@ -33,15 +97,17 @@ if [ "${input,,}" != "continue" ]; then
 	exit 1
 fi
 
-#TODO find root
-TARGET_PART=$(findmnt -no SOURCE /)
-TARGET_DISK=$(lsblk --list -no type,name --inverse "$TARGET_PART" | grep ^disk | cut -d " " -f 2)
+SRC_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
+
+target_part=$(findmnt -no SOURCE /)
+target_disk=$(lsblk --list -no type,name --inverse "$target_part" | grep ^disk | cut -d " " -f 2)
 
 sfdisk_file=$(mktemp)
-sfdisk -d "/dev/$TARGET_DISK" > "$sfdisk_file"
+sfdisk -d "/dev/$target_disk" > "$sfdisk_file"
 sfdisk_label=$(grep -Po "label:\\s+\\K.*" "$sfdisk_file")
+
 if [ -z "$sfdisk_label" ]; then
-	echo "disk: error" >&2
+	echo "disk: error disk no label" >&2
 	exit 1
 elif [ "$sfdisk_label" = "dos" ]; then
 	:
@@ -81,14 +147,15 @@ for line in "${lines[@]}"; do
 done
 
 if [ "${TARGET_OS_RELEASE[ID]}" = "raspbian" -a "${TARGET_OS_RELEASE[VERSION_ID]}" = '"10"' ]; then
-	DPKG_ARCH_TARGET=arm64
-	grub_install_cmd="grub-install --directory=/usr/lib/grub/arm64-efi --efi-directory=/boot --force-extra-removable --no-nvram"
-elif [ "${TARGET_OS_RELEASE[ID]}" = "ubuntu" -a "${TARGET_OS_RELEASE[VERSION_ID]}" = '"22.04"' ]; then
-	grub_install_cmd="grub-install --directory=/usr/lib/grub/arm64-efi --efi-directory=/boot/firmware --no-nvram"
-	#chmod -x /etc/kernel/postinst.d/zz-flash-kernel
+	dpkg_arch_target=$BOARD_arch
+	grub_install_cmd="grub-install --directory=/usr/lib/grub/${BOARD_arch}-efi --efi-directory=/boot --force-extra-removable --no-nvram"
 else
 	echo "os-release: only Raspbian 10 is supported!" >&2
 	exit 1
+fi
+
+if which rpi-eeprom-update > /dev/null; then
+	systemctl disable rpi-eeprom-update || true
 fi
 
 dpkg_arch=$(dpkg --print-architecture)
@@ -98,59 +165,34 @@ if [ -z "$dpkg_arch" ]; then
 elif [ "$dpkg_arch" = "armhf" ]; then
 	dpkg_arches_foreign=$(dpkg --print-foreign-architectures)
 	for dpkg_arch_foreign in $dpkg_arches_foreign; do
-		if [ "$dpkg_arch_foreign" = "$DPKG_ARCH_TARGET" ]; then
+		if [ "$dpkg_arch_foreign" = "$dpkg_arch_target" ]; then
 			break
 		fi
 	done
-	if [ "$dpkg_arch_foreign" != "$DPKG_ARCH_TARGET" ]; then
-		dpkg --add-architecture arm64
+	if [ "$dpkg_arch_foreign" != "$dpkg_arch_target" ]; then
+		dpkg --add-architecture ${BOARD_arch}
 	fi
 	
 	apt_sources=$(ls /etc/apt/sources.list /etc/apt/sources.list.d/*.list)
 	for apt_source in $apt_sources; do
 		sed -Ei "s/^(deb)\\s+(http:\\/\\/)/\\1 [ arch=armhf ] \2/" "$apt_source"
 	done
-	echo 'deb [ arch=arm64 ] http://deb.debian.org/debian/ buster main' > /etc/apt/sources.list.d/debian-main.list
+	echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ buster main" > /etc/apt/sources.list.d/debian-main.list
 	
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
-
-elif [ "$dpkg_arch" = "arm64" ]; then
-	:
 else
 	echo "dpkg: architecture is not supported" >&2
 	exit 1
 fi
 
-if [ "${TARGET_OS_RELEASE[ID]}" = "ubuntu" -a "${TARGET_OS_RELEASE[VERSION_ID]}" = '"22.04"' ]; then
-	apt -y remove flash-kernel
-	if [ -f /boot/firmware/boot.scr ]; then
-		rm /boot/firmware/boot.scr
-	fi
-	dtbs=$(ls /boot/dtb /boot/dtb-* /boot/dtbs)
-	if [ ! -z "$dtbs" ]; then
-		for dtb in $dtbs; do
-			if [ -f "$dtb" -o -L "$dtb" ]; then
-				rm "$dtb"
-			elif [ -d "$dtb" ]; then
-				rm -r "$dtb"
-			fi
-		done
-	fi
-fi
-
-KERNEL_HEADER_URL='https://kernel.libre.computer/manual/linux-5.18/linux-header-5.18_arm64.deb'
-KERNEL_IMAGE_URL='https://kernel.libre.computer/manual/linux-5.18/linux-image-5.18_arm64.deb'
-kernel_dir=$(mktemp -d)
-wget -O "$kernel_dir/${KERNEL_HEADER_URL##*/}" "$KERNEL_HEADER_URL"
-wget -O "$kernel_dir/${KERNEL_IMAGE_URL##*/}" "$KERNEL_IMAGE_URL"
-
-dpkg -i "$kernel_dir"/*.deb
+wget -O "/usr/share/keyrings/libre-computer-deb.gpg" 'https://deb.libre.computer/repo/libre-computer-deb.gpg'
+echo "deb [arch=${BOARD_arch} signed-by=/usr/share/keyrings/libre-computer-deb.gpg] https://deb.libre.computer/repo linux main non-free" > "$root_mount_dir/etc/apt/sources.list.d/libre-computer-deb.list"
 
 apt update
 #apt -y dist-upgrade
-apt -y install grub-efi-arm64
+apt -y install grub-efi-arm64 linux-image-lc-stable-$BOARD_arch linux-headers-lc-stable-$BOARD_arch
 $grub_install_cmd
 sed -Ei "s/(GRUB_CMDLINE_LINUX_DEFAULT)=\"quiet/\1=\"noquiet/" /etc/default/grub
 update-grub
@@ -159,19 +201,17 @@ if [ "${TARGET_OS_RELEASE[ID]}" = "raspbian" ]; then
 	cp /boot/EFI/raspbian/grub.cfg /boot/EFI/debian/grub.cfg
 fi
 
-BOOT_LOADER_URL='https://boot.libre.computer/manual/u-boot-latest-aml-s905x-cc'
-boot_loader_file=$(mktemp)
-wget -O "$boot_loader_file" "$BOOT_LOADER_URL"
-dd if="$boot_loader_file" of=/dev/"$TARGET_DISK" bs=512 seek=1
+if [ "$BOARD_bootLoader" -eq 1 ]; then
+	BOOT_LOADER_URL="http://boot.libre.computer/ci/$BOARD_name"
+	boot_loader_file=$(mktemp)
+	wget -O "$boot_loader_file" "$BOOT_LOADER_URL"
+	dd if="$boot_loader_file" of=/dev/"$target_disk" bs=512 seek=$BOARD_bootSector
+fi
 
-tee /etc/X11/xorg.conf <<EOF
-Section "Device"
-	Identifier "FBTurbo"
-	Driver "fbturbo"
-	Option "DRI2" "true"
-	Option "AccelMethod" "CPU"
-EndSection
-EOF
+cp $SRC_DIR/apps/xorg/10-*.conf /usr/share/X11/xorg.conf.d
+if [ -f $SRC_DIR/apps/alsa/${BOARD_name}.state ]; then
+	cp $SRC_DIR/apps/alsa/${BOARD_name}.state /var/lib/alsa/asound.state
+fi
 
-read -n 1 -p "Modifications complete. Press any key to shutdown. Once the green LED stops blinking and turns off for 10 seconds, remove power and move the MicroSD card to the Libre Computer board."
+read -n 1 -p "Modifications complete. Press any key to shutdown. Once the green LED stops blinking and turns off for 10 seconds, remove power and move the MicroSD card to the Libre Computer Board."
 shutdown -H now
