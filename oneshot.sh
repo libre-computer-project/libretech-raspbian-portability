@@ -16,8 +16,8 @@ if [ -z "$1" ]; then
 	echo "all-h3-cc-h5" >&2
 	echo "aml-s805x-ac" >&2
 	echo "aml-s905x-cc" >&2
-#	echo "roc-rk3328-cc" >&2
-#	echo "roc-rk3399-pc" >&2
+	echo "roc-rk3328-cc" >&2
+	echo "roc-rk3399-pc" >&2
 	echo "sudo $0 BOARD" >&2
 	exit 1
 fi
@@ -51,20 +51,20 @@ case "$1" in
 		BOARD_bootLoader=1
 		BOARD_arch=arm64
 		;;
-#	roc-rk3328-cc)
-#		BOARD_name=roc-rk3328-cc
-#		BOARD_bootSector=64
-#		BOARD_console=S2,1500000
-#		BOARD_bootLoader=1
-#		BOARD_arch=arm64
-#		;;
-#	roc-rk3399-pc)
-#		BOARD_name=roc-rk3399-pc
-#		BOARD_bootSector=64
-#		BOARD_console=S2,1500000
-#		BOARD_bootLoader=1
-#		BOARD_arch=arm64
-#		;;
+	roc-rk3328-cc)
+		BOARD_name=roc-rk3328-cc
+		BOARD_bootSector=64
+		BOARD_console=S2,1500000
+		BOARD_bootLoader=1
+		BOARD_arch=arm64
+		;;
+	roc-rk3399-pc)
+		BOARD_name=roc-rk3399-pc
+		BOARD_bootSector=64
+		BOARD_console=S2,1500000
+		BOARD_bootLoader=1
+		BOARD_arch=arm64
+		;;
 	*)
 		echo "Unsupported board $1" >&2
 		exit 1
@@ -85,7 +85,6 @@ This script installs/configures/overwrites data this device/MicroSD card.
 It is designed to run on Raspberry Pi(R)s and requires internet access to 
 download additional necessary components.
 
-Only Raspbian 10 Buster 32-bit armhf lite and desktop are supported.
 Once completed, move the MicroSD card to the selected Libre Computer Board.
 
 Please type 'continue' without quotes to acknowledge and start the script.
@@ -146,11 +145,22 @@ for line in "${lines[@]}"; do
 	TARGET_OS_RELEASE["$key"]="$value"
 done
 
-if [ "${TARGET_OS_RELEASE[ID]}" = "raspbian" -a "${TARGET_OS_RELEASE[VERSION_ID]}" = '"10"' ]; then
+if [ "${TARGET_OS_RELEASE[ID]}" = "raspbian" ]; then
+	case  "${TARGET_OS_RELEASE[VERSION_ID]}" in
+		'"10"')
+			:
+			;;
+		'"11"')
+			:
+			;;
+		*)
+			echo "os-release-version: only Raspbian 10 and 11 are supported." >&2
+			;;
+	esac
 	dpkg_arch_target=$BOARD_arch
 	grub_install_cmd="grub-install --directory=/usr/lib/grub/${BOARD_arch}-efi --efi-directory=/boot --force-extra-removable --no-nvram"
 else
-	echo "os-release: only Raspbian 10 is supported!" >&2
+	echo "os-release: only Raspbian is supported!" >&2
 	exit 1
 fi
 
@@ -177,7 +187,7 @@ elif [ "$dpkg_arch" = "armhf" ]; then
 	for apt_source in $apt_sources; do
 		sed -Ei "s/^(deb)\\s+(http:\\/\\/)/\\1 [ arch=armhf ] \2/" "$apt_source"
 	done
-	echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ buster main" > /etc/apt/sources.list.d/debian-main.list
+	echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ ${TARGET_OS_RELEASE[VERSION_CODENAME]} main" > /etc/apt/sources.list.d/debian-main.list
 	
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
@@ -192,7 +202,7 @@ echo "deb [arch=${BOARD_arch} signed-by=/usr/share/keyrings/libre-computer-deb.g
 
 apt update
 #apt -y dist-upgrade
-apt -y install grub-efi-arm64 linux-image-lc-stable-$BOARD_arch linux-headers-lc-stable-$BOARD_arch
+apt -y install grub-efi-$BOARD_arch linux-image-lc-stable-$BOARD_arch linux-headers-lc-stable-$BOARD_arch
 $grub_install_cmd
 sed -Ei "s/(GRUB_CMDLINE_LINUX_DEFAULT)=\"quiet/\1=\"noquiet/" /etc/default/grub
 update-grub
