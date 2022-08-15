@@ -192,6 +192,7 @@ case "dpkg_arch" in
 	"")
 		echo "dpkg: failed to get architecture" >&2
 		exit 1
+		;;
 	armhf)
 		:
 		;;
