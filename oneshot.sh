@@ -188,7 +188,7 @@ if which rpi-eeprom-update > /dev/null; then
 fi
 
 dpkg_arch=$(dpkg --print-architecture)
-case "dpkg_arch" in
+case "$dpkg_arch" in
 	"")
 		echo "dpkg: failed to get architecture" >&2
 		exit 1
