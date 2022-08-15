@@ -217,15 +217,20 @@ if [ "$dpkg_arch_foreign" != "$dpkg_arch_target" ]; then
 fi
 
 apt_sources=$(ls /etc/apt/sources.list /etc/apt/sources.list.d/*.list)
+apt_source_add=1
 for apt_source in $apt_sources; do
 	sed -Ei "s/^(deb)\\s+(http:\\/\\/)/\\1 [ arch=$dpkg_arch ] \2/" "$apt_source"
+	if grep "deb.debian.org/debian" "$apt_source" > /dev/null; then
+		apt_source_add=0
+	fi
 done
-echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ ${TARGET_OS_RELEASE[VERSION_CODENAME]} main" > /etc/apt/sources.list.d/debian-main.list
 
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
-
+if [ $apt_source_add -eq 1 ]; then
+	echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ ${TARGET_OS_RELEASE[VERSION_CODENAME]} main" > /etc/apt/sources.list.d/debian-main.list
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
+fi
 
 wget -O "/usr/share/keyrings/libre-computer-deb.gpg" 'https://deb.libre.computer/repo/libre-computer-deb.gpg'
 echo "deb [arch=${BOARD_arch} signed-by=/usr/share/keyrings/libre-computer-deb.gpg] https://deb.libre.computer/repo linux main non-free" > "$root_mount_dir/etc/apt/sources.list.d/libre-computer-deb.list"
