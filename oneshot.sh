@@ -247,7 +247,9 @@ if [ "$BOARD_bootLoader" -eq 1 ]; then
 	dd if="$boot_loader_file" of=/dev/"$target_disk" bs=512 seek=$BOARD_bootSector
 fi
 
-cp $SRC_DIR/apps/xorg/10-*.conf /usr/share/X11/xorg.conf.d
+if [ -d /usr/share/X11/xorg.conf.d ]; then
+	cp $SRC_DIR/apps/xorg/10-*.conf /usr/share/X11/xorg.conf.d
+fi
 if [ -f $SRC_DIR/apps/alsa/${BOARD_name}.state ]; then
 	cp $SRC_DIR/apps/alsa/${BOARD_name}.state /var/lib/alsa/asound.state
 fi
