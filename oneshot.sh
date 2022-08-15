@@ -145,24 +145,43 @@ for line in "${lines[@]}"; do
 	TARGET_OS_RELEASE["$key"]="$value"
 done
 
-if [ "${TARGET_OS_RELEASE[ID]}" = "raspbian" ]; then
-	case  "${TARGET_OS_RELEASE[VERSION_ID]}" in
-		'"10"')
-			:
-			;;
-		'"11"')
-			:
-			;;
-		*)
-			echo "os-release-version: only Raspbian 10 and 11 are supported." >&2
-			;;
-	esac
-	dpkg_arch_target=$BOARD_arch
-	grub_install_cmd="grub-install --directory=/usr/lib/grub/${BOARD_arch}-efi --efi-directory=/boot --force-extra-removable --no-nvram"
-else
-	echo "os-release: only Raspbian is supported!" >&2
-	exit 1
-fi
+machine_arch=$(uname -m)
+case $machine_arch in
+	aarch64)
+		if [ "${TARGET_OS_RELEASE[ID]}" != "debian" ]; then
+			echo "os-release: for 64-bit systems, only Raspbian is supported." >&2
+			exit 1
+		elif [ "${TARGET_OS_RELEASE[VERSION_ID]}" != "11" ]; then
+			echo "os-release: for 64-bit systems, only Raspbian 11 is supported." >&2
+			exit 1
+		fi
+		;;
+	armv7l)
+		if [ "${TARGET_OS_RELEASE[ID]}" != "raspbian" ]; then
+			echo "os-release: for 32-bit systems, only Raspbian is supported." >&2
+			exit 1
+		fi
+		case  "${TARGET_OS_RELEASE[VERSION_ID]}" in
+			'"10"')
+				:
+				;;
+			'"11"')
+				:
+				;;
+			*)
+				echo "os-release-version: for 32-bit systems, only Raspbian 10 and 11 are supported." >&2
+				exit 1
+				;;
+		esac
+		;;
+	*)
+		echo "os-release: unsupported architecture $machine_arch." >&2
+		exit 1
+		;;
+esac
+
+dpkg_arch_target=$BOARD_arch
+grub_install_cmd="grub-install --directory=/usr/lib/grub/${BOARD_arch}-efi --efi-directory=/boot --force-extra-removable --no-nvram"
 
 if which rpi-eeprom-update > /dev/null; then
 	systemctl disable rpi-eeprom-update || true

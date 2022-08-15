@@ -17,18 +17,19 @@ should still remain bootable on the original board.
 
 
 ## Supported Distributions
-- [Raspbian 10 Buster Lite armhf](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-32-bit)
-- [Raspbian 10 Buster Desktop armhf](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-32-bit)
-- Raspbian 11 is Debian so we recommend waiting until we release Debian. Meanwhile, you can use our [Ubuntu 22.04.1](http://distro.libre.computer/ci/ubuntu/22.04/) images.
+- [Raspbian 10 Buster Lite and Desktop armhf](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-legacy)
+- [Raspbian 11 Bullseye Lite and Desktop armhf](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-32-bit)
+- [Raspbian 11 Bullseye Lite and Desktop arm64](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-64-bit)
+- If you want to use Ubuntu, you can use these [Ubuntu 22.04.1 images](http://distro.libre.computer/ci/ubuntu/22.04/).
 
 ## Supported Boards
 - All Libre Computer Boards
 
 ## Current Status
-GPIOs, I2C, SPI, UART, PWM need to be translated via our [wiring tool](https://github.com/libre-computer-project/libretech-wiring-tool.git).
-Software designed specificially for Raspberry Pi&reg; hardware will not work.
-Camera, DPI screens, and DSI panels are not supported.
-This is not extensively tested on all scenarios.
+- GPIOs, I2C, SPI, UART, PWM need to be translated via our [wiring tool](https://github.com/libre-computer-project/libretech-wiring-tool.git).
+- Software designed specificially for Raspberry Pi&reg; hardware will not work.
+- Camera, DPI screens, and DSI panels are not supported.
+= This is not extensively tested for all scenarios. Please report bugs on [our hub thread](https://hub.libre.computer/t/feedback-for-raspbian-portability/32).
 
 ## How to Use
 On your Raspberry Pi:registered:, run:
@@ -40,12 +41,12 @@ sudo ./oneshot.sh aml-s905x-cc
 Replace aml-s905x-cc with the appropriate board you want the image to run on and follow the instructions.
 
 ## Help and Support
-[Libre Computer Hub](https://hub.libre.computer/t/feedback-for-raspbian-portability/32)
-[Libera Chat IRC #librecomputer](https://web.libera.chat/#librecomputer)
+- [Libre Computer Hub](https://hub.libre.computer/t/feedback-for-raspbian-portability/32)
+- [Libera Chat IRC #librecomputer](https://web.libera.chat/#librecomputer)
 
 ## Roadmap
-- Raspbian 11 bullseye 64-bit and 32-bit support
 - Refactor to robust coding standards
 - Device tree overlay translation
+- Firmware
 
 If you need commercial support for any distro, [please let us know](https://libre.computer/#contact).
