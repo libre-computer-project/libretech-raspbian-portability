@@ -184,10 +184,6 @@ esac
 dpkg_arch_target=$BOARD_arch
 grub_install_cmd="grub-install --directory=/usr/lib/grub/${BOARD_arch}-efi --efi-directory=/boot --force-extra-removable --no-nvram"
 
-if which rpi-eeprom-update > /dev/null; then
-	systemctl disable rpi-eeprom-update || true
-fi
-
 dpkg_arch=$(dpkg --print-architecture)
 case "$dpkg_arch" in
 	"")
@@ -198,7 +194,10 @@ case "$dpkg_arch" in
 		:
 		;;
 	arm64)
-		:
+		if [ "$BOARD_arch" = "arm" ]; then
+			echo "$BOARD_name can only run 32-bit images." >&2
+			exit 1
+		fi
 		;;
 	*)
 		echo "dpkg: architecture is not supported" >&2
@@ -230,6 +229,10 @@ if [ $apt_source_add -eq 1 ]; then
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
+fi
+
+if which rpi-eeprom-update > /dev/null; then
+	systemctl disable rpi-eeprom-update || true
 fi
 
 wget -O "/usr/share/keyrings/libre-computer-deb.gpg" 'https://deb.libre.computer/repo/libre-computer-deb.gpg'

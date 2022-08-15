@@ -10,7 +10,7 @@ something unexpected occurs. While the image should still boot on the original
 device, this is not fully tested or guaranteed so continue at your own risk.
 
 This script installs/configures/overwrites data on the device's MicroSD card.
-It is designed to run on Raspberry Pi(R)s and requires internet access to 
+It is designed to run on Raspberry Pi&reg;s and requires internet access to 
 download additional necessary components. Once the script finishes, the card
 should still remain bootable on the original board.
 
