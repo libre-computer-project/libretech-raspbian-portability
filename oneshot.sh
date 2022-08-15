@@ -151,7 +151,7 @@ case $machine_arch in
 		if [ "${TARGET_OS_RELEASE[ID]}" != "debian" ]; then
 			echo "os-release: for 64-bit systems, only Raspbian is supported." >&2
 			exit 1
-		elif [ "${TARGET_OS_RELEASE[VERSION_ID]}" != "11" ]; then
+		elif [ "${TARGET_OS_RELEASE[VERSION_ID]}" != '"11"' ]; then
 			echo "os-release: for 64-bit systems, only Raspbian 11 is supported." >&2
 			exit 1
 		fi
