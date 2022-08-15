@@ -27,7 +27,7 @@ should still remain bootable on the original board.
 - GPIOs, I2C, SPI, UART, PWM need to be translated via our [wiring tool](https://github.com/libre-computer-project/libretech-wiring-tool.git).
 - Software designed specificially for Raspberry Pi&reg; hardware will not work.
 - Camera, DPI screens, and DSI panels are not supported.
-= This is not extensively tested for all scenarios. Please report bugs on [our hub thread](https://hub.libre.computer/t/feedback-for-raspbian-portability/32).
+- This is not extensively tested for all scenarios. Please report bugs on [our hub thread](https://hub.libre.computer/t/feedback-for-raspbian-portability/32).
 
 ## How to Use
 On your Raspberry Pi:registered:, run:
