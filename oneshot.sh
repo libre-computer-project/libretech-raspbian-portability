@@ -72,18 +72,19 @@ case "$1" in
 esac
 
 cat <<EOF
-This script is designed to run on existing Raspbian images and enabled them
-them to boot on Libre Computer boards. It uses our extensive upstream u-boot
-and Linux work and infrastructure to support Raspbian's legacy ARMv6 binaries.
+This script is designed to run on existing Raspbian images and enables them
+to boot on Libre Computer boards. It uses upstream FOSS software stack
+developed by the community and Libre Computer to support booting Raspbian.
 
 It is a proof-of-concept and there are no warranties implied or otherwise.
-We highly recommend backing up the images if they hold important data in case
-something unexpected occurs. While they should still boot on your original
+We highly recommend backing up the image if it holds important data in case
+something unexpected occurs. While the image should still boot on the original
 device, this is not fully tested or guaranteed so continue at your own risk.
 
-This script installs/configures/overwrites data this device/MicroSD card.
+This script installs/configures/overwrites data on the device's MicroSD card.
 It is designed to run on Raspberry Pi(R)s and requires internet access to 
-download additional necessary components.
+download additional necessary components. Once the script finishes, the card
+should still remain bootable on the original board.
 
 Once completed, move the MicroSD card to the selected Libre Computer Board.
 
