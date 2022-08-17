@@ -72,10 +72,10 @@ case "$1" in
 esac
 
 cat <<EOF
-This script is designed to run on existing Raspbian images and enables them
-to boot on Libre Computer boards. It uses upstream FOSS software stack
+This script is designed to run on existing Raspbian images and enables them               
+to boot on any Libre Computer board. It uses an upstream FOSS software stack
 developed by the community and Libre Computer to support booting Raspbian.
-
+                                                                                                                                                                                                                   
 It is a proof-of-concept and there are no warranties implied or otherwise.
 We highly recommend backing up the image if it holds important data in case
 something unexpected occurs. While the image should still boot on the original

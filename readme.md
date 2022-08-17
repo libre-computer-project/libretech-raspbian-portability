@@ -1,7 +1,7 @@
 # Libre Computer Raspbian Portability
 ## Objective
 This script is designed to run on existing Raspbian images and enables them
-to boot on Libre Computer boards. It uses upstream FOSS software stack
+to boot on any Libre Computer board. It uses an upstream FOSS software stack
 developed by the community and Libre Computer to support booting Raspbian.
 
 It is a proof-of-concept and there are no warranties implied or otherwise.
@@ -14,22 +14,25 @@ It is designed to run on Raspberry Pi&reg;s and requires internet access to
 download additional necessary components. Once the script finishes, the card
 should still remain bootable on the original board.
 
+## Prerequisites
+- Raspberry Pi 3 Model B+ or higher
+- Reliable MicroSD Card (Samsung/SanDisk recommended)
+- MicroUSB Power Supply
+- Internet Connection
+- [Any Libre Computer board (Amazon Link)](https://amzn.to/3c2xvAS)
+
 ## Supported Distributions
 - [Raspbian 10 Buster Lite and Desktop armhf](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-legacy)
 - [Raspbian 11 Bullseye Lite and Desktop armhf](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-32-bit)
 - [Raspbian 11 Bullseye Lite and Desktop arm64](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-64-bit)
 - If you want to use Ubuntu, you can use these [Ubuntu 22.04.1 images](http://distro.libre.computer/ci/ubuntu/22.04/).
 
-## Supported Boards
-- All Libre Computer Boards
-
-## Current Status
-- GPIOs, I2C, SPI, UART, PWM need to be translated via our [wiring tool](https://github.com/libre-computer-project/libretech-wiring-tool.git).
-- Software designed specificially for Raspberry Pi&reg; hardware will not work.
-- Camera, DPI screens, and DSI panels are not supported.
-- This is not extensively tested for all scenarios. Please report bugs on [our hub thread](https://hub.libre.computer/t/feedback-for-raspbian-portability/32).
+## Supported Features
+- GPIOs and Device Tree Overlays (dtoverlay) for I2C, SPI, UART, PWM need to be translated via our [wiring tool](https://github.com/libre-computer-project/libretech-wiring-tool.git).
+- Software designed around specific Raspberry Pi&reg; hardware such as MIPI cameras, DPI displays, DSI pannels are not supported.
 
 ## How to Use
+[YouTube Video RunThrough](https://youtu.be/xetHqVwrjkE?t=180)
 On your Raspberry Pi:registered:, run:
 ```bash
 git clone https://github.com/libre-computer-project/libretech-raspbian-portability.git lrp
