@@ -15,7 +15,7 @@ download additional necessary components. Once the script finishes, the card
 should still remain bootable on the original board.
 
 ## Prerequisites
-- Raspberry Pi 3 Model B+ or higher
+- Raspberry Pi 2 Model B or higher
 - Reliable MicroSD Card (Samsung/SanDisk recommended)
 - MicroUSB Power Supply
 - Internet Connection
