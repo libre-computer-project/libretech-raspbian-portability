@@ -32,7 +32,7 @@ should still remain bootable on the original board.
 - Software designed around specific Raspberry Pi&reg; hardware such as MIPI cameras, DPI displays, DSI pannels are not supported.
 
 ## How to Use
-[YouTube Video RunThrough](https://youtu.be/xetHqVwrjkE?t=180)
+[YouTube Video RunThrough](https://www.youtube.com/watch?v=IK9hq4qYVeE)
 On your Raspberry Pi:registered:, run:
 ```bash
 git clone https://github.com/libre-computer-project/libretech-raspbian-portability.git lrp
