@@ -226,9 +226,9 @@ done
 
 if [ $apt_source_add -eq 1 ]; then
 	echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ ${TARGET_OS_RELEASE[VERSION_CODENAME]} main" > /etc/apt/sources.list.d/debian-main.list
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
+	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 605C66F00D6C9793
+	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9
+	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 648ACFD622F3D138
 fi
 
 if which rpi-eeprom-update > /dev/null; then
