@@ -36,6 +36,7 @@ should still remain bootable on the original board.
 [YouTube Video RunThrough](https://www.youtube.com/watch?v=IK9hq4qYVeE)
 On your Raspberry Pi:registered:, run:
 ```bash
+sudo apt install -y git
 git clone https://github.com/libre-computer-project/libretech-raspbian-portability.git lrp
 sudo lrp/oneshot.sh aml-s905x-cc
 ```
