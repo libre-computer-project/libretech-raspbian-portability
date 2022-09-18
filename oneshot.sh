@@ -226,11 +226,16 @@ done
 
 if [ $apt_source_add -eq 1 ]; then
 	echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ ${TARGET_OS_RELEASE[VERSION_CODENAME]} main" > /etc/apt/sources.list.d/debian-main.list
-	echo "deb [ arch=${BOARD_arch} ] http://security.debian.org/debian-security ${TARGET_OS_RELEASE[VERSION_CODENAME]}-security main" >> /etc/apt/sources.list.d/debian-main.list
 	echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ ${TARGET_OS_RELEASE[VERSION_CODENAME]}-updates main" >> /etc/apt/sources.list.d/debian-main.list
 	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 605C66F00D6C9793
 	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9
 	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 648ACFD622F3D138
+	
+	if [ "${TARGET_OS_RELEASE[VERSION_CODENAME]}" = "buster" ]; then
+		echo "deb [ arch=${BOARD_arch} ] http://security.debian.org/debian-security ${TARGET_OS_RELEASE[VERSION_CODENAME]}/updates main" >> /etc/apt/sources.list.d/debian-main.list
+	else
+		echo "deb [ arch=${BOARD_arch} ] http://security.debian.org/debian-security ${TARGET_OS_RELEASE[VERSION_CODENAME]}-security main" >> /etc/apt/sources.list.d/debian-main.list
+	fi
 	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 112695A0E562B32A
 fi
 
