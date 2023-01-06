@@ -28,7 +28,7 @@ case "$1" in
 		BOARD_bootSector=16
 		BOARD_console=S0,115200
 		BOARD_bootLoader=1
-		BOARD_arch=arm
+		BOARD_arch=armhf
 		;;
 	all-h3-cc-h5)
 		BOARD_name=all-h3-cc-h5
@@ -67,6 +67,21 @@ case "$1" in
 		;;
 	*)
 		echo "Unsupported board $1" >&2
+		exit 1
+		;;
+esac
+
+case $BOARD_arch in
+	armhf)
+		BOARD_arch_cpu=arm
+		BOARD_cpu=arm
+		;;
+	arm64)
+		BOARD_arch_cpu=arm64
+		BOARD_cpu=aarch64
+		;;
+	*)
+		echo "Unsupported arch $1" > &2
 		exit 1
 		;;
 esac
@@ -182,7 +197,7 @@ case $machine_arch in
 esac
 
 dpkg_arch_target=$BOARD_arch
-grub_install_cmd="grub-install --directory=/usr/lib/grub/${BOARD_arch}-efi --efi-directory=/boot --force-extra-removable --no-nvram"
+grub_install_cmd="grub-install --directory=/usr/lib/grub/${BOARD_arch_cpu}-efi --efi-directory=/boot --force-extra-removable --no-nvram"
 
 dpkg_arch=$(dpkg --print-architecture)
 case "$dpkg_arch" in
@@ -194,7 +209,7 @@ case "$dpkg_arch" in
 		:
 		;;
 	arm64)
-		if [ "$BOARD_arch" = "arm" ]; then
+		if [ "$BOARD_arch" = "armhf" ]; then
 			echo "$BOARD_name can only run 32-bit images." >&2
 			exit 1
 		fi
@@ -248,7 +263,7 @@ echo "deb [arch=${BOARD_arch} signed-by=/usr/share/keyrings/libre-computer-deb.g
 
 apt update
 #apt -y dist-upgrade
-apt -y install grub-efi-$BOARD_arch linux-image-lc-stable-$BOARD_arch linux-headers-lc-stable-$BOARD_arch
+apt -y install grub-efi-$BOARD_arch_cpu linux-image-lc-stable-$BOARD_arch_cpu linux-headers-lc-stable-$BOARD_arch_cpu
 $grub_install_cmd
 sed -Ei "s/(GRUB_CMDLINE_LINUX_DEFAULT)=\"quiet/\1=\"noquiet/" /etc/default/grub
 update-grub
