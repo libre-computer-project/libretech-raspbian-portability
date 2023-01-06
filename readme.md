@@ -25,11 +25,12 @@ should still remain bootable on the original board.
 - [Raspbian 10 Buster Lite and Desktop armhf](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-legacy)
 - [Raspbian 11 Bullseye Lite and Desktop armhf](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-32-bit)
 - [Raspbian 11 Bullseye Lite and Desktop arm64](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-64-bit)
+- NOOBS (New Out Of Box Software) is not supported.
 - If you want to use Ubuntu, you can use these [Ubuntu 22.04.1 images](http://distro.libre.computer/ci/ubuntu/22.04/).
 - If you want to use Raspbian, you can use these [Raspbian 11 images](https://distro.libre.computer/ci/raspbian/bullseye/).
 
 ## Supported Features
-- GPIOs and Device Tree Overlays (dtoverlay) for I2C, SPI, UART, PWM need to be translated via our [wiring tool](https://github.com/libre-computer-project/libretech-wiring-tool.git).
+- GPIOs and Device Tree Overlays (dtoverlay) for I2C, SPI, UART, PWM need to be mapped via [libretech-wiring-tool](https://github.com/libre-computer-project/libretech-wiring-tool.git).
 - Software designed around specific Raspberry Pi&reg; hardware such as MIPI cameras, DPI displays, DSI pannels are not supported.
 
 ## How to Use
