@@ -81,7 +81,7 @@ case $BOARD_arch in
 		BOARD_cpu=aarch64
 		;;
 	*)
-		echo "Unsupported arch $1" > &2
+		echo "Unsupported arch $1" >&2
 		exit 1
 		;;
 esac
