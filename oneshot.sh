@@ -263,7 +263,7 @@ echo "deb [arch=${BOARD_arch} signed-by=/usr/share/keyrings/libre-computer-deb.g
 
 apt update
 #apt -y dist-upgrade
-apt -y install grub-efi-$BOARD_arch_cpu linux-image-lc-stable-$BOARD_arch_cpu linux-headers-lc-stable-$BOARD_arch_cpu
+apt -y install grub-efi-$BOARD_arch_cpu linux-image-lc-lts-$BOARD_arch_cpu linux-headers-lc-lts-$BOARD_arch_cpu
 $grub_install_cmd
 sed -Ei "s/(GRUB_CMDLINE_LINUX_DEFAULT)=\"quiet/\1=\"noquiet/" /etc/default/grub
 update-grub
