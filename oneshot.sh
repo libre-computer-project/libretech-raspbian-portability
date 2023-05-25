@@ -179,7 +179,9 @@ case $machine_arch in
 		fi
 		case  "${TARGET_OS_RELEASE[VERSION_ID]}" in
 			'"10"')
-				:
+				if [ "$BOARD_arch" != "arm64" ]; then
+					skip_grub_shim_hold=1
+				fi
 				;;
 			'"11"')
 				:
@@ -262,13 +264,16 @@ wget -O "/usr/share/keyrings/libre-computer-deb.gpg" 'https://deb.libre.computer
 echo "deb [arch=${BOARD_arch} signed-by=/usr/share/keyrings/libre-computer-deb.gpg] https://deb.libre.computer/repo linux main non-free" > "$root_mount_dir/etc/apt/sources.list.d/libre-computer-deb.list"
 
 apt update
-apt-mark hold shim-signed
+if [ -z "$skip_grub_shim_hold" ]; then
+	apt-mark hold shim-signed
+fi
+
 #apt -y dist-upgrade
 apt -y install grub-efi-$BOARD_arch_cpu linux-image-lc-lts-$BOARD_arch_cpu linux-headers-lc-lts-$BOARD_arch_cpu
 $grub_install_cmd
 sed -Ei "s/(GRUB_CMDLINE_LINUX_DEFAULT)=\"quiet/\1=\"noquiet/" /etc/default/grub
 update-grub
-if [ "${TARGET_OS_RELEASE[ID]}" = "raspbian" ]; then
+if [ -z "$skip_grub_shim_hold" ]; then
 	mkdir -p /boot/EFI/debian
 	cp /boot/EFI/raspbian/grub.cfg /boot/EFI/debian/grub.cfg
 fi
