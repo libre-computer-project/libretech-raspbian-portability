@@ -273,9 +273,14 @@ apt -y install grub-efi-$BOARD_arch_cpu linux-image-lc-lts-$BOARD_arch_cpu linux
 $grub_install_cmd
 sed -Ei "s/(GRUB_CMDLINE_LINUX_DEFAULT)=\"quiet/\1=\"noquiet/" /etc/default/grub
 update-grub
-if [ -z "$skip_grub_shim_hold" ]; then
-	mkdir -p /boot/EFI/debian
-	cp /boot/EFI/raspbian/grub.cfg /boot/EFI/debian/grub.cfg
+
+if [ "${TARGET_OS_RELEASE[ID]}" != "debian" ]; then
+	grub_cfg="grub.cfg"
+	if [ -e "/boot/EFI/${TARGET_OS_RELEASE[ID]}/$grub_cfg" ]; then
+		debian_grub_cfg_path=/boot/EFI/debian
+		mkdir -p "$debian_grub_cfg_path"
+		cp "/boot/EFI/${TARGET_OS_RELEASE[ID]}/$grub_cfg" "$debian_grub_cfg_path/$grub_cfg"
+	fi
 fi
 
 if [ "$BOARD_bootLoader" -eq 1 ]; then
