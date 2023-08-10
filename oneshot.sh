@@ -244,16 +244,18 @@ done
 if [ $apt_source_add -eq 1 ]; then
 	echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ ${TARGET_OS_RELEASE[VERSION_CODENAME]} main" > /etc/apt/sources.list.d/debian-main.list
 	echo "deb [ arch=${BOARD_arch} ] http://deb.debian.org/debian/ ${TARGET_OS_RELEASE[VERSION_CODENAME]}-updates main" >> /etc/apt/sources.list.d/debian-main.list
-	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 605C66F00D6C9793
-	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9
-	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 648ACFD622F3D138
+	wget -qO - 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x605c66f00d6c9793' | sudo apt-key add - # Debian Stable Release Key (11/bullseye)
+	wget -qO - 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x0e98404d386fa1d9' | sudo apt-key add - # Debian Archive Automatic Signing Key (11/bullseye)
+	wget -qO - 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x648acfd622f3d138' | sudo apt-key add - # Debian Archive Automatic Signing Key (12/bookworm)
+	wget -qO - 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x0e98404d386fa1d9' | sudo apt-key add - # Debian Archive Automatic Signing Key (11/bullseye)
+	wget -qO - 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x6ed0e7b82643e131' | sudo apt-key add - # Debian Archive Automatic Signing Key (12/bookworm)
 	
 	if [ "${TARGET_OS_RELEASE[VERSION_CODENAME]}" = "buster" ]; then
 		echo "deb [ arch=${BOARD_arch} ] http://security.debian.org/debian-security ${TARGET_OS_RELEASE[VERSION_CODENAME]}/updates main" >> /etc/apt/sources.list.d/debian-main.list
 	else
 		echo "deb [ arch=${BOARD_arch} ] http://security.debian.org/debian-security ${TARGET_OS_RELEASE[VERSION_CODENAME]}-security main" >> /etc/apt/sources.list.d/debian-main.list
 	fi
-	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 112695A0E562B32A
+	wget -qO - 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x112695a0e562b32a' | sudo apt-key add - # Debian Security Archive Automatic Signing Key (10/buster)
 fi
 
 if which rpi-eeprom-update > /dev/null; then
